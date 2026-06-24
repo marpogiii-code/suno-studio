@@ -1,0 +1,25 @@
+appId: com.marpogiii.sunostudio
+productName: Suno Studio
+directories:
+  buildResources: build
+files:
+  - '!**/.vscode/*'
+  - '!src/*'
+  - '!electron.vite.config.{js,ts,mjs,cjs}'
+  - '!{.eslintrc.cjs,.prettierrc.yaml,.prettierignore}'
+  - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
+asarUnpack:
+  - resources/**
+win:
+  target:
+    - nsis
+mac:
+  target:
+    - dmg
+  category: public.app-category.music
+linux:
+  target:
+    - AppImage
+    - deb
+  category: Audio
+npmRebuild: false
