@@ -331,6 +331,10 @@ export default function CreatePage({
           >
             {generating ? 'Submitting…' : continueClipId ? 'Generate extension' : 'Generate'}
           </button>
+          <p className="hint" style={{ marginTop: 8 }}>
+            Suno shows a quick human-verification window on generate — solve it once and your
+            track starts.
+          </p>
         </div>
 
         {results.length > 0 && (

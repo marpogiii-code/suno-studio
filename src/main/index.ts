@@ -3,6 +3,7 @@ import { join } from 'path'
 import { promises as fs } from 'fs'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { SunoClient, SunoError } from './suno/client'
+import { solveTurnstile } from './suno/turnstile'
 import { getSettings, saveSettings, getCookie } from './store'
 import { IpcChannels } from '../shared/ipc'
 import type { AppSettings, Clip, GenerateRequest, IpcResult } from '../shared/types'
@@ -75,8 +76,13 @@ function registerIpc(): void {
 
   ipcMain.handle(IpcChannels.listPersonas, () => ok(() => getClient().listPersonas()))
 
-  ipcMain.handle(IpcChannels.generate, (_e, req: GenerateRequest) =>
-    ok(() => getClient().generate(req))
+  ipcMain.handle(IpcChannels.generate, (e, req: GenerateRequest) =>
+    ok(async () => {
+      const client = getClient()
+      const parent = BrowserWindow.fromWebContents(e.sender) ?? undefined
+      const turnstileToken = await solveTurnstile(parent)
+      return client.generate({ ...req, turnstileToken })
+    })
   )
 
   ipcMain.handle(IpcChannels.getClips, (_e, ids: string[]) =>

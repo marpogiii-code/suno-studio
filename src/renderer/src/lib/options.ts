@@ -105,10 +105,12 @@ export const PRODUCTION = [
 ]
 
 export const MODEL_VERSIONS = [
-  { value: 'chirp-v3-5', label: 'v3.5' },
+  { value: 'chirp-fenix', label: 'v5.5' },
+  { value: 'chirp-crow', label: 'v5' },
+  { value: 'chirp-bluejay', label: 'v4.5+' },
+  { value: 'chirp-auk', label: 'v4.5' },
   { value: 'chirp-v4', label: 'v4' },
-  { value: 'chirp-v4-5', label: 'v4.5' },
-  { value: 'chirp-bluejay', label: 'v5 (bluejay)' }
+  { value: 'chirp-v3-5', label: 'v3.5' }
 ]
 
 export const SECTION_TAGS = [

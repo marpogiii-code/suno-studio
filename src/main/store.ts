@@ -13,7 +13,7 @@ interface PersistedShape {
   presets: StylePreset[]
 }
 
-const DEFAULT_MODEL = 'chirp-v3-5'
+const DEFAULT_MODEL = 'chirp-fenix'
 
 function defaultDownloadDir(): string {
   return join(app.getPath('music'), 'SunoStudio')

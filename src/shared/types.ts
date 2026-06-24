@@ -23,6 +23,8 @@ export interface GenerateRequest {
   /** Continuation: clip id and start time when extending an existing clip. */
   continueClipId?: string
   continueAt?: number
+  /** Cloudflare Turnstile token from the in-app human-verification window. */
+  turnstileToken?: string
 }
 
 export type ClipStatus = 'submitted' | 'queued' | 'streaming' | 'complete' | 'error'

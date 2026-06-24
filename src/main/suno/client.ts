@@ -176,8 +176,13 @@ export class SunoClient {
   }
 
   async generate(req: GenerateRequest): Promise<Clip[]> {
+    if (!req.turnstileToken) {
+      throw new SunoError(
+        'Missing human-verification token. Suno requires the verification check before generating.'
+      )
+    }
     const payload = buildGeneratePayload(req)
-    const body = await this.api<SunoGenerateResponse>('/api/generate/v2/', {
+    const body = await this.api<SunoGenerateResponse>('/api/generate/v2-web/', {
       method: 'POST',
       body: payload
     })
@@ -216,20 +221,30 @@ function buildGeneratePayload(req: GenerateRequest): Record<string, unknown> {
   if (typeof req.weirdnessConstraint === 'number')
     metadata.weirdness_constraint = req.weirdnessConstraint
 
+  // Mirror the field set the suno.com web client posts to /api/generate/v2-web/.
   const base: Record<string, unknown> = {
+    token: req.turnstileToken,
+    generation_type: 'TEXT',
     mv: req.modelVersion,
     title: req.title,
     make_instrumental: req.makeInstrumental,
-    generation_type: 'TEXT'
+    user_uploaded_images_b64: null,
+    metadata,
+    override_fields: [],
+    cover_clip_id: null,
+    persona_id: req.personaId ?? null,
+    continue_clip_id: null,
+    continue_at: null
   }
 
   if (req.customMode) {
     base.prompt = req.prompt
     base.tags = req.tags
-    if (req.negativeTags) base.negative_tags = req.negativeTags
+    base.negative_tags = req.negativeTags ?? ''
   } else {
     base.gpt_description_prompt = req.gptDescriptionPrompt ?? ''
     base.prompt = ''
+    base.tags = req.tags
   }
 
   if (req.continueClipId) {
@@ -237,8 +252,6 @@ function buildGeneratePayload(req: GenerateRequest): Record<string, unknown> {
     base.continue_at = req.continueAt ?? 0
     base.task = 'extend'
   }
-  if (req.personaId) base.persona_id = req.personaId
-  if (Object.keys(metadata).length > 0) base.metadata = metadata
   return base
 }
 
