@@ -52,12 +52,35 @@ The cookie is stored encrypted on your machine (via Electron `safeStorage`) and
 is only ever sent to Suno. Cookies expire periodically — if generation stops
 working, paste a fresh one.
 
+## Public song downloader (CLI)
+
+`tools/suno-downloader.mjs` saves any **public** Suno song without an account,
+using the same approach as usesuno.com's downloader: it parses the song page's
+Next.js payload for metadata, then fetches the encrypted audio stream and
+decrypts it locally (AES-CTR with a key from a rights grant). Zero dependencies.
+
+```bash
+npm run download -- https://suno.com/song/<uuid>            # audio only
+npm run download -- https://suno.com/s/<short> --all        # audio + mp4 + cover + lyrics
+npm run download -- https://suno.com/playlist/<uuid> --mp3  # whole playlist, converted with ffmpeg
+npm run download -- <uuid> --json                           # print clip metadata
+```
+
+Accepts `suno.com/song/<uuid>`, `suno.com/s/<short>`, `suno.com/hook/<uuid>`,
+`suno.com/playlist/<uuid>` or a bare UUID; files land in `./downloads` (`-o <dir>`
+to change). Audio comes out as `.m4a` (Opus); pass `--mp3` to transcode with
+ffmpeg. The proxy / rights endpoints are overridable via `--proxy`, `--rights`,
+`--origin` or the `SUNO_PROXY`, `SUNO_RIGHTS_URL`, `SUNO_RIGHTS_ORIGIN` env vars.
+
 ## Caveats
 
 - This uses Suno's **unofficial** internal API. Suno can change it at any time,
   which may break the app until the endpoints are updated.
 - Use it at a normal, human pace. Hammering the API with automation can get an
   account flagged. This tool is for your own music creation.
+- The downloader relies on third-party proxy/rights endpoints (the ones
+  usesuno.com uses); if they change or go away, point it elsewhere with
+  `--proxy` / `--rights`.
 
 ## License
 
